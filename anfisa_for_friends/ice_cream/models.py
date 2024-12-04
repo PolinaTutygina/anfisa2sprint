@@ -32,10 +32,14 @@ class Topping(PublishedModel):
 
 
 class Wrapper(PublishedModel):
-    title = models.CharField(max_length=256, verbose_name='Название')
+    title = models.CharField(
+        max_length=256,
+        verbose_name='Название',
+        help_text='Уникальное название обёртки, не более 256 символов'
+    )
 
     class Meta:
-        verbose_name = 'обёртка'
+        verbose_name = 'объект «Обёртка»'
         verbose_name_plural = 'Обёртки'
     
     def __str__(self):
@@ -45,6 +49,11 @@ class Wrapper(PublishedModel):
 class IceCream(PublishedModel):
     title = models.CharField(max_length=256, verbose_name='Название')
     description = models.TextField(verbose_name='Описание')
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    output_order = models.PositiveSmallIntegerField(
+        default=100,
+        verbose_name='Порядок отображения'
+    )
     wrapper = models.OneToOneField(
         Wrapper,
         on_delete=models.SET_NULL,
@@ -65,6 +74,10 @@ class IceCream(PublishedModel):
     class Meta:
         verbose_name = 'мороженое'
         verbose_name_plural = 'Мороженое'
+        # Сначала сортируем по полю output_order, 
+        # а если у нескольких объектов значения output_order совпадают-- 
+        # сортируем по title.
+        ordering = ('output_order', 'title')
         
     def __str__(self):
         return self.title 
